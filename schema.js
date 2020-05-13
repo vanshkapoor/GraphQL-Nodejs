@@ -5,11 +5,8 @@ const _ = require("lodash");
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID } = graphql;
 
 // making dummy data
-var books = [
-  { name: "book1", genre: "adv", id: "1" },
-  { name: "book2", genre: "fictional", id: "2" },
-  { name: "book3", genre: "sci fi", id: "3" }
-];
+
+const books = require("./booksdata");
 
 //TASK1 :  DEFINING THE SCHEMA
 const BookType = new GraphQLObjectType({
