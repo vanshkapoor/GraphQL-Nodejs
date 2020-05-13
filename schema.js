@@ -2,11 +2,18 @@
 const graphql = require("graphql");
 const _ = require("lodash");
 
-const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID } = graphql;
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLSchema,
+  GraphQLID,
+  GraphQLInt
+} = graphql;
 
 // making dummy data
 
 const books = require("./booksdata");
+const author = require("./authordata");
 
 //TASK1 :  DEFINING THE SCHEMA
 const BookType = new GraphQLObjectType({
@@ -16,6 +23,15 @@ const BookType = new GraphQLObjectType({
     id: { type: GraphQLID }, //The complete shcema is made of types that are understandable by the graphQL
     name: { type: GraphQLString },
     genre: { type: GraphQLString }
+  })
+});
+const AuhtorType = new GraphQLObjectType({
+  name: "Author", //name for the schema object
+  fields: () => ({
+    //This is a function because it helps the mutuple types that will be created in future to  interaxt with each other
+    id: { type: GraphQLID }, //The complete shcema is made of types that are understandable by the graphQL
+    name: { type: GraphQLString },
+    age: { type: GraphQLInt }
   })
 });
 
@@ -30,6 +46,13 @@ const RootQuery = new GraphQLObjectType({
       resolve(parent, args) {
         return _.find(books, { id: args.id });
         // code to get data from db / other resources
+      }
+    },
+    author: {
+      type: AuhtorType,
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return _.find(author, { id: args.id });
       }
     }
   }
