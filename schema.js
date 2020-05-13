@@ -22,10 +22,16 @@ const BookType = new GraphQLObjectType({
     //This is a function because it helps the mutuple types that will be created in future to  interaxt with each other
     id: { type: GraphQLID }, //The complete shcema is made of types that are understandable by the graphQL
     name: { type: GraphQLString },
-    genre: { type: GraphQLString }
+    genre: { type: GraphQLString },
+    author: {
+      type: AuthorType,
+      resolve(parent, args) {
+        return _.find(author, { id: parent.authorid });
+      }
+    }
   })
 });
-const AuhtorType = new GraphQLObjectType({
+const AuthorType = new GraphQLObjectType({
   name: "Author", //name for the schema object
   fields: () => ({
     //This is a function because it helps the mutuple types that will be created in future to  interaxt with each other
@@ -49,7 +55,7 @@ const RootQuery = new GraphQLObjectType({
       }
     },
     author: {
-      type: AuhtorType,
+      type: AuthorType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         return _.find(author, { id: args.id });
