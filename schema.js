@@ -2,7 +2,7 @@
 const graphql = require("graphql");
 const _ = require("lodash");
 
-const { GraphQLObjectType, GraphQLString, GraphQLSchema } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID } = graphql;
 
 // making dummy data
 var books = [
@@ -16,7 +16,7 @@ const BookType = new GraphQLObjectType({
   name: "Book", //name for the schema object
   fields: () => ({
     //This is a function because it helps the mutuple types that will be created in future to  interaxt with each other
-    id: { type: GraphQLString }, //The complete shcema is made of types that are understandable by the graphQL
+    id: { type: GraphQLID }, //The complete shcema is made of types that are understandable by the graphQL
     name: { type: GraphQLString },
     genre: { type: GraphQLString }
   })
@@ -29,7 +29,7 @@ const RootQuery = new GraphQLObjectType({
     //THE style you define this field, is the way how you will get the data
     book: {
       type: BookType, //name of the schema
-      args: { id: { type: GraphQLString } },
+      args: { id: { type: GraphQLID } }, //graphQLID is flexible i.e, works on both id and strign
       resolve(parent, args) {
         return _.find(books, { id: args.id });
         // code to get data from db / other resources
