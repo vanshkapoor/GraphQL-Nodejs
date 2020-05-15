@@ -8,7 +8,8 @@ const {
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull
 } = graphql;
 
 // making dummy data
@@ -29,7 +30,9 @@ const BookType = new GraphQLObjectType({
     author: {
       type: AuthorType,
       resolve(parent, args) {
-        return _.find(author, { id: parent.authorid });
+        let id = parent.authorId;
+        return Author.findById(id);
+        // return _.find(author, { id: parent.authorid });
       }
     }
   })
@@ -44,7 +47,8 @@ const AuthorType = new GraphQLObjectType({
     book: {
       type: new GraphQLList(BookType), //since an author has multpiple books
       resolve(parent, args) {
-        return _.filter(books, { authorid: parent.id }); //returns the array from list
+        return Book.find({ authorId: parent.id });
+        // return _.filter(books, { authorid: parent.id }); //returns the array from list
       }
     }
   })
@@ -59,6 +63,7 @@ const RootQuery = new GraphQLObjectType({
       type: BookType, //name of the schema
       args: { id: { type: GraphQLID } }, //graphQLID is flexible i.e, works on both id and strign
       resolve(parent, args) {
+        return Book.findById(args.id);
         // return _.find(books, { id: args.id });
         // code to get data from db / other resources
       }
@@ -67,6 +72,7 @@ const RootQuery = new GraphQLObjectType({
       type: AuthorType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
+        return Author.findById(args.id);
         // return _.find(author, { id: args.id });
       }
     },
@@ -74,12 +80,14 @@ const RootQuery = new GraphQLObjectType({
       //for all books
       type: new GraphQLList(BookType),
       resolve(parent, args) {
+        return Book.find({});
         // return books;
       }
     },
     authors: {
       type: new GraphQLList(AuthorType),
       resolve(parent, args) {
+        return Author.find({});
         // return author;
       }
     }
@@ -91,30 +99,31 @@ const Mutations = new GraphQLObjectType({
   fields: {
     addAuthor: {
       type: AuthorType,
-      args: { name: { type: GraphQLString }, age: { type: GraphQLInt } },
-      resolve(parent, args) {
-        let obj = {
-          name: args.name,
-          age: args.age
-        };
-        let author = new Author(obj);
-        return author.save(); //this return is important to see data when an object is made..Also author.save() returns the newly made object
-      }
-    },
-    addBooks: {
-      type: BookType,
       args: {
         name: { type: GraphQLString },
-        genre: { type: GraphQLString },
-        authorid: { type: GraphQLID }
+        age: { type: GraphQLInt }
       },
       resolve(parent, args) {
-        let obj = {
+        let author = new Author({
+          name: args.name,
+          age: args.age
+        });
+        return author.save();
+      }
+    },
+    addBook: {
+      type: BookType,
+      args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        genre: { type: new GraphQLNonNull(GraphQLString) },
+        authorId: { type: GraphQLID }
+      },
+      resolve(parent, args) {
+        let book = new Book({
           name: args.name,
           genre: args.genre,
-          authorid: args.authorid
-        };
-        let book = new Book(obj);
+          authorId: args.authorId
+        });
         return book.save();
       }
     }
