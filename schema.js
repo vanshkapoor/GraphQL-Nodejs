@@ -13,8 +13,10 @@ const {
 
 // making dummy data
 
-const books = require("./booksdata");
-const author = require("./authordata");
+// const books = require("./booksdata");
+// const author = require("./authordata");
+const Book = require("./models/books");
+const Author = require("./models/author");
 
 //TASK1 :  DEFINING THE SCHEMA
 const BookType = new GraphQLObjectType({
@@ -57,7 +59,7 @@ const RootQuery = new GraphQLObjectType({
       type: BookType, //name of the schema
       args: { id: { type: GraphQLID } }, //graphQLID is flexible i.e, works on both id and strign
       resolve(parent, args) {
-        return _.find(books, { id: args.id });
+        // return _.find(books, { id: args.id });
         // code to get data from db / other resources
       }
     },
@@ -65,25 +67,44 @@ const RootQuery = new GraphQLObjectType({
       type: AuthorType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return _.find(author, { id: args.id });
+        // return _.find(author, { id: args.id });
       }
     },
     books: {
       //for all books
       type: new GraphQLList(BookType),
       resolve(parent, args) {
-        return books;
+        // return books;
       }
     },
     authors: {
       type: new GraphQLList(AuthorType),
       resolve(parent, args) {
-        return author;
+        // return author;
+      }
+    }
+  }
+});
+
+const Mutations = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addAuthor: {
+      type: AuthorType,
+      args: { name: { type: GraphQLString }, age: { type: GraphQLInt } },
+      resolve(parent, args) {
+        let obj = {
+          name: args.name,
+          age: args.age
+        };
+        let author = new Author(obj);
+        return author.save(); //this return is important to see data when an object is made..Also author.save() returns the newly made object
       }
     }
   }
 });
 
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation: Mutations
 });
