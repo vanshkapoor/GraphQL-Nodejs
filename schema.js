@@ -7,7 +7,8 @@ const {
   GraphQLString,
   GraphQLSchema,
   GraphQLID,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLList
 } = graphql;
 
 // making dummy data
@@ -37,7 +38,13 @@ const AuthorType = new GraphQLObjectType({
     //This is a function because it helps the mutuple types that will be created in future to  interaxt with each other
     id: { type: GraphQLID }, //The complete shcema is made of types that are understandable by the graphQL
     name: { type: GraphQLString },
-    age: { type: GraphQLInt }
+    age: { type: GraphQLInt },
+    book: {
+      type: new GraphQLList(BookType), //since an author has multpiple books
+      resolve(parent, args) {
+        return _.filter(books, { authorid: parent.id }); //returns the array from list
+      }
+    }
   })
 });
 
