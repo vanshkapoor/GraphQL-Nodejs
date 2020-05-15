@@ -100,6 +100,23 @@ const Mutations = new GraphQLObjectType({
         let author = new Author(obj);
         return author.save(); //this return is important to see data when an object is made..Also author.save() returns the newly made object
       }
+    },
+    addBooks: {
+      type: BookType,
+      args: {
+        name: { type: GraphQLString },
+        genre: { type: GraphQLString },
+        authorid: { type: GraphQLID }
+      },
+      resolve(parent, args) {
+        let obj = {
+          name: args.name,
+          genre: args.genre,
+          authorid: args.authorid
+        };
+        let book = new Book(obj);
+        return book.save();
+      }
     }
   }
 });
